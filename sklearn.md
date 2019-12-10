@@ -39,4 +39,26 @@ data_y = loaded_data.target
 x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, test_size=0.3)
 ```
 
-### 建立模型
+### 建立模型-训练-预测
+机器学习分为监督学习和无监督学习，监督学习可用的算法有决策树、SVM、Logistic Regression等，无监督学习包括聚类、PCA等。机器学习各个模型没有好与坏的区别，它们在不同的场景下都能发挥各自的用途。
+```python
+# 定义模型
+knn = KNeighborsClassifier()
+# 使用fit来训练测试集
+knn.fit(x_train, y_train)
+# 通过训练集得到的模型预测测试集的输出
+print(knn.predict(x_test))
+print(y_test)
+```
+
+### 实用的功能
+在sklearn中除了以上提到的，其实还有一些使用的功能可以帮助更有效的理解和调试模型
+```python
+# 度量模型泛化能力的另一种方式是使用score得到模型预测的分数
+print(knn.score(x_test, y_test))
+# 通过get_params()取出之前定义的参数
+print(knn.get_params())
+```
+
+#### 数据标准化()
+由于数据的偏差与跨度会影响机器学习的效果，因此正规化(标准化)数据可以提升机器学习的效果
