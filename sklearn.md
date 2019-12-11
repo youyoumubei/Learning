@@ -99,6 +99,7 @@ print(clf.score(x_test, y_test))
 为了避免在训练过程中造成模型的过拟合(overfitting)，通常的做法就是保留数据集的一部分作为测试集，下图是模型训练的典型交叉验证流程。更多内容可以看[这里](https://scikit-learn.org/stable/modules/cross_validation.html)
 ![avatar](/img/cros_val.jpg)
 
+交叉验证中有不同的评估标准，对于分类模型一般使用准确率(accuracy)评估，对于回归模型一般使用平均方差(mean squared error)评估
 ```python
 # K-fold交叉验证模块，计算代价高但是数据利用率高
 from sklearn.cross_validation import cross_val_score
@@ -111,3 +112,78 @@ print(scores)
 print(scores.mean())
 ```
 ![avatar](/img/kfold.jpg)
+
+### 检视过拟合
+通过图形观察到什么时候会出现过拟合
+
+#### Learning curve
+sklearn[官方代码](https://scikit-learn.org/stable/auto_examples/model_selection/plot_learning_curve.html?highlight=learning_curve)
+```python
+# 学习曲线
+from sklearn.learning_curve import learning_curve
+from sklearn.datasets import load_digits #digits数据集
+from sklearn.svm import SVC #Support Vector Classifier
+import matplotlib.pyplot as plt #可视化模块
+import numpy as np
+
+digits = load_digits()
+X = digits.data
+y = digits.target
+
+train_sizes, train_loss, test_loss = learning_curve(
+    SVC(gamma=0.001), X, y, cv=10, scoring='mean_squared_error',
+    train_sizes=[0.1, 0.25, 0.5, 0.75, 1])
+
+#平均每一轮所得到的平均方差(共5轮，分别为样本10%、25%、50%、75%、100%)
+train_loss_mean = -np.mean(train_loss, axis=1)
+test_loss_mean = -np.mean(test_loss, axis=1)
+
+plt.plot(train_sizes, train_loss_mean, 'o-', color="r",
+         label="Training")
+plt.plot(train_sizes, test_loss_mean, 'o-', color="g",
+        label="Cross-validation")
+
+plt.xlabel("Training examples")
+plt.ylabel("Loss")
+plt.legend(loc="best")
+plt.show()
+```
+
+#### Validation curve
+sklearn[官方代码](https://scikit-learn.org/stable/auto_examples/model_selection/plot_validation_curve.html#sphx-glr-auto-examples-model-selection-plot-validation-curve-py)
+
+Every estimator has its advantages and drawbacks. Its generalization error can be decomposed in terms of bias, variance and noise. The bias of an estimator is its average error for different training sets. The variance of an estimator indicates how sensitive it is to varying training sets. Noise is a property of the data.
+```python
+from sklearn.learning_curve import validation_curve #validation_curve模块
+from sklearn.datasets import load_digits 
+from sklearn.svm import SVC 
+import matplotlib.pyplot as plt 
+import numpy as np
+
+#digits数据集
+digits = load_digits()
+X = digits.data
+y = digits.target
+
+#建立参数测试集
+param_range = np.logspace(-6, -2.3, 5)
+
+#使用validation_curve快速找出参数对模型的影响
+train_loss, test_loss = validation_curve(
+    SVC(), X, y, param_name='gamma', param_range=param_range, cv=10, scoring='mean_squared_error')
+
+#平均每一轮的平均方差
+train_loss_mean = -np.mean(train_loss, axis=1)
+test_loss_mean = -np.mean(test_loss, axis=1)
+
+#可视化图形
+plt.plot(param_range, train_loss_mean, 'o-', color="r",
+         label="Training")
+plt.plot(param_range, test_loss_mean, 'o-', color="g",
+        label="Cross-validation")
+
+plt.xlabel("gamma")
+plt.ylabel("Loss")
+plt.legend(loc="best")
+plt.show()
+```
