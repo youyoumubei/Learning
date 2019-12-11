@@ -62,3 +62,52 @@ print(knn.get_params())
 
 #### 数据标准化()
 由于数据的偏差与跨度会影响机器学习的效果，因此正规化(标准化)数据可以提升机器学习的效果
+```python
+# 标准化数据模块
+from sklearn import preprocessing
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.datasets.samples_generator import make_classification
+from sklearn.svm import SVC
+# 可视化数据的模块
+import matplotlib.pyplot as plt
+
+#生成具有2种属性的300笔数据
+X, y = make_classification(
+    n_samples=300, n_features=2,
+    n_redundant=0, n_informative=2, 
+    random_state=22, n_clusters_per_class=1, 
+    scale=100)
+
+#可视化数据
+plt.scatter(X[:, 0], X[:, 1], c=y)
+plt.show()
+# 未进行数据处理的预测结果
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+clf = SVC()
+clf.fit(x_train, y_train)
+print(clf.score(x_test, y_test))
+# 进行预处理后的预测结果
+X = preprocessing.scale(X)
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+clf = SVC()
+clf.fit(x_train, y_train)
+print(clf.score(x_test, y_test))
+```
+
+### 交叉验证(cross validation)
+为了避免在训练过程中造成模型的过拟合(overfitting)，通常的做法就是保留数据集的一部分作为测试集，下图是模型训练的典型交叉验证流程。更多内容可以看[这里](https://scikit-learn.org/stable/modules/cross_validation.html)
+![avatar](/img/cros_val.jpg)
+
+```python
+# K-fold交叉验证模块，计算代价高但是数据利用率高
+from sklearn.cross_validation import cross_val_score
+
+#使用K-fold交叉验证模块
+scores = cross_val_score(knn, X, y, cv=5, scoring='accuracy')
+#将5次的预测准确率打印出
+print(scores)
+#将5次的预测准确平均率打印出
+print(scores.mean())
+```
+![avatar](/img/kfold.jpg)
