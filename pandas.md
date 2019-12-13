@@ -15,6 +15,7 @@ data.tail(3)
 # 读取行的数据
 data.loc[0]
 data.loc[3:6]
+data.loc[3, 'col']
 # 读取某列的数据
 cols = ['col1', 'col2']
 data[cols]
@@ -44,4 +45,42 @@ data.sort_values('col1', inplace=True, ascending=False)
 age = data['age']
 age_is_null = pd.isnull(age)
 age_null_true = age[age_is_null]
+# 求均值
+data['age'].mean()
+# 统计两个变量之间的关系
+data.plvot_table(index='col1', values='col2', aggfunc=np.mean)
+data.plvot_table(index='Pclass', values='Age', aggfunc=np.mean)
+data.plvot_table(index='Pclass', values=['Fare', 'Survived'], aggfunc=np.sum)
+# 丢弃缺失值
+data.dropna(axis=1)
+data.dropna(axis=0, subset=['Age', 'Sex'])
+# 重新排序
+new_data = data.sort_values('col1' ascending=False)
+# drop=True生成新的数据
+new_data.reset_index(drop=True)
+```
+
+## 自定义函数
+```python
+# 自定义apply函数
+def some_func():
+    ...
+    return something
+
+def not_null_account(column):
+    column_null = pd.isnull(column)
+    null = column[column_null]
+    return len(null)
+# 数据离散化
+def is_minor(row):
+    if row['age'] < 18:
+        return True
+    else:
+        return False
+
+data.apply(some_func)
+```
+
+## Series结构
+```python
 ```
