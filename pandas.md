@@ -82,5 +82,26 @@ data.apply(some_func)
 ```
 
 ## Series结构
+DataFrame的一行或一列
 ```python
+from pandas import Series
+
+series_film = data['FILM']
+file_name = series_film.values
+rt_scores = data['SCORES'].values
+print(type(file_name)) # numpy.ndarray
+
+# 用str当做索引
+series_custom = Series(rt_scores, index=file_name)
+series_custom[['Film A', 'Film B']]
+print(series_custom[5:10])
+
+# 排序
+series_custom.sort_index()
+series_custom.sort_values()
+
+# 针对字符串索引的一些操作
+film_data = data.set_index('FILM', drop=False)
+film_data['Axxxx':'Hxxxx']
+film_data.loc['Bxxx']
 ```
