@@ -105,3 +105,5 @@ film_data = data.set_index('FILM', drop=False)
 film_data['Axxxx':'Hxxxx']
 film_data.loc['Bxxx']
 ```
+
+## 解决样本分布不均衡问题
