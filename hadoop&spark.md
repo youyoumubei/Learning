@@ -31,6 +31,7 @@ MapReduce:为海量的数据提供计算，采用分而治之的思想降低资�
 
 * Map:Map Task，对输入的每条记录执行map操作
 * Shuffle:对数据进行分组后传输到Reduce，类比洗牌
+  *  Shuffle的大致流程为：Maptask会不断收集我们的map()方法输出的kv对，放到内存缓冲区中，当缓冲区达到饱和的时候(默认占比为0.8)就会溢出到磁盘中，如果map的输出结果很多，则会有多个溢出文件，多个溢出文件会被合并成一个大的溢出文件，在文件溢出、合并的过程中，都要调用partitoner进行分组和针对key进行排序(默认是按照Key的hash值对Partitoner个数取模)，之后reducetask根据自己的分区号，去各个maptask机器上取相应的结果分区数据，reducetask会将这些文件再进行合并（归并排序)。合并成大文件后，shuffle的过程也就结束了，后面进入reducetask的逻辑运算过程（从文件中取出每一个键值对的Group，调用UDF函数(用户自定义的方法))
 * Reduce:Reduce Task一次只处理一个任务，规约出结果集或部分结果集，最后写入HDFS
 * Combine:可选操作，减少传输给reducer的数据量
 * Split:数据分片，分配到不同mapper，降低数据传输成本
